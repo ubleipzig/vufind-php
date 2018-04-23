@@ -1,0 +1,13 @@
+#!/bin/bash
+set -e
+
+if [ ! -d "${VUFIND_APPLICATION_PATH}" ];then
+	echo "the application folder \"${VUFIND_APPLICATION_PATH}\" was not found. make shure to attach a sufficiently set up vufind container"
+	exit 1;
+fi;
+
+mkdir -p ${VUFIND_CACHE_DIR}
+
+chown www-data:www-data ${VUFIND_APPLICATION_PATH} ${VUFIND_CACHE_DIR} ~www-data -R
+
+exec docker-php-entrypoint "$@"

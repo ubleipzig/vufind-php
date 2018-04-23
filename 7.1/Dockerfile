@@ -1,0 +1,39 @@
+FROM php:7.1-fpm-alpine
+ENTRYPOINT [ "/docker-entrypoint" ]
+
+ENV VUFIND_CACHE_DIR=/var/cache/vufind \
+  VUFIND_APPLICATION_PATH=/usr/local/vufind \
+  VUFIND_LOCAL_DIR=/usr/local/vufind/local \
+  VUFIND_ENV=production \
+  NODE_ENV=production \
+  npm_config_registry=https://services.ub.uni-leipzig.de/nexus/repository/npm/
+
+COPY assets/entrypoint-php /docker-entrypoint
+
+RUN apk add --no-cache --update icu-dev freetype-dev libjpeg-turbo-dev libmcrypt-dev libpng-dev libxslt-dev postgresql-dev zlib-dev bzip2-dev autoconf \
+  && apk add libpng libjpeg-turbo freetype icu-libs libpq libmcrypt libxslt python make g++ coreutils nodejs nodejs-npm git subversion openssh openssl bash \
+  && docker-php-ext-configure gd --with-freetype-dir=/usr/include --with-jpeg-dir=/usr/include \
+  && docker-php-ext-install -j$(nproc) intl mysqli pdo_pgsql pdo_mysql pdo gd xsl intl soap zip bz2 \
+  && pecl install mcrypt-1.0.1 \
+  && docker-php-ext-enable mcrypt \
+  && apk del icu-dev freetype-dev libjpeg-turbo-dev libmcrypt-dev libpng-dev libxslt-dev postgresql-dev zlib-dev bzip2-dev autoconf \
+  && npm install -g autoconfig eslint@"<3.0.0" \
+  # hack for issue https://github.com/sass/node-sass/issues/1757
+  && cd /tmp \
+  && npm install -j$(nproc) grunt-sass@"^1.0.0" \
+  && cd /tmp/node_modules/node-sass \
+  && node scripts/build -f -j $(nproc) \
+  && cd / \
+  && cp /tmp/node_modules/node-sass/vendor/linux-x64-48/binding.node /root/.npm/node-sass/3.13.1/linux-x64-48_binding.node \
+  && rm /tmp/* -rf \
+  && cp -a ~/.npm ~www-data/.npm \
+  && chown www-data:www-data ~www-data/.npm -R \
+  && rm /var/lib/apt/lists/* -rf \
+  && pear install pear/Http_Request2 \
+  && pear channel-discover pear.phing.info \
+  && pear install phing/phing \
+  && chmod a+x /docker-entrypoint
+
+WORKDIR ${VUFIND_APPLICATION_PATH}
+
+CMD [ "php-fpm" ]
