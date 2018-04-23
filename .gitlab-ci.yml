@@ -8,10 +8,10 @@ php_image:
   - docker:dind
   script: |
     mkdir -p ~/.docker && echo "$DOCKER_AUTH_CONFIG" >~/.docker/config.json
-    export version=`expr ${CI_COMMIT_TAG} ':' '([^-]+)'`
-    export major_version=`expr ${version} ':' '([^.]+)'`
-    export minor_version=`expr ${version} ':' '[^.]+\.([^-]+)'`
-    export suffix=`expr ${CI_COMMIT_TAG} ':' '[^-]+-\(.*\)'`
+    export version=`expr ${CI_COMMIT_TAG} ':' '\([^-]\+\)'`
+    export major_version=`expr ${version} ':' '\([^.]\+\)'`
+    export minor_version=`expr ${version} ':' '[^.]\+\.\([^-]\+\)'`
+    export suffix=`expr ${CI_COMMIT_TAG} ':' '[^-]\+-\(.*\)'`
     docker build -t ubleipzig/vufind-php:${version}-${suffix} -f ${version}/Dockerfile .
     docker push ubleipzig/vufind-php:${version}-${suffix}
     for tag in "latest" "{major_version}" "${version}"; do
@@ -40,10 +40,10 @@ php_vufind1_image:
   - docker:dind
   script: |
     mkdir -p ~/.docker && echo "$DOCKER_AUTH_CONFIG" >~/.docker/config.json
-    export version=`expr ${CI_COMMIT_TAG} ':' 'vufind1/([^-]+)'`
-    export major_version=`expr ${version} ':' '([^.]+)'`
-    export minor_version=`expr ${version} ':' '[^.]+\.([^-]+)'`
-    export suffix=`expr ${CI_COMMIT_TAG} ':' 'vufind1/[^-]+-(.*\)'`
+    export version=`expr ${CI_COMMIT_TAG} ':' 'vufind1/\([^-]\+\)'`
+    export major_version=`expr ${version} ':' '\([^.]\+\)'`
+    export minor_version=`expr ${version} ':' '[^.]\+\.\([^-]\+\)'`
+    export suffix=`expr ${CI_COMMIT_TAG} ':' 'vufind1/[^-]\+-\(.*\)'`
     docker build -t ubleipzig/vufind-php:${version}-${suffix}-vufind1-debug -f ${version}/vufind1/debug/Dockerfile .
     docker push ubleipzig/vufind-php:${version}-${suffix}-vufind1-debug
     for tag in "{major_version}-vufind1-debug" "${version}-vufind1-debug" "vufind1-debug"; do
