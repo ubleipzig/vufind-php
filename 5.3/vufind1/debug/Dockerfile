@@ -2,7 +2,8 @@ FROM cespi/php-5.3:fpm
 ENTRYPOINT [ "/docker-entrypoint" ]
 
 ENV VUFIND_CACHE_DIR=/var/cache/vufind \
-  VUFIND_APPLICATION_PATH=/usr/local/vufind
+  VUFIND_APPLICATION_PATH=/usr/local/vufind \
+  VUFIND_ENV=development
 
 COPY assets/entrypoint-php-debug /docker-entrypoint
 

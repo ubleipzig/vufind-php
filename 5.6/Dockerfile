@@ -10,15 +10,17 @@ ENV VUFIND_CACHE_DIR=/var/cache/vufind \
 
 COPY assets/docker-entrypoint /docker-entrypoint
 
-RUN apk add --no-cache --update icu-dev freetype-dev libjpeg-turbo-dev libmcrypt-dev libpng-dev libxslt-dev postgresql-dev zlib-dev bzip2-dev \
-  && apk add libpng libjpeg-turbo freetype icu-libs libpq libmcrypt libxslt python make g++ coreutils nodejs git subversion openssh openssl bash \
+RUN apk add --no-cache --update --virtual .build-deps icu-dev freetype-dev libjpeg-turbo-dev libmcrypt-dev libpng-dev libxslt-dev postgresql-dev zlib-dev bzip2-dev \
+  && apk add libpng libjpeg-turbo freetype icu-libs libpq libmcrypt libxslt python make g++ coreutils nodejs nodejs-npm git subversion openssh openssl bash \
   && docker-php-ext-configure gd --with-freetype-dir=/usr/include --with-jpeg-dir=/usr/include \
   && docker-php-ext-install -j$(nproc) intl mysqli pdo_pgsql pdo_mysql pdo gd xsl mcrypt intl soap zip bz2 \
-  && apk del icu-dev freetype-dev libjpeg-turbo-dev libmcrypt-dev libpng-dev libxslt-dev postgresql-dev zlib-dev bzip2-dev \
+  && apk del .build-deps \
   && npm install -g autoconfig eslint@"<3.0.0" \
   # hack for issue https://github.com/sass/node-sass/issues/1757
   && cd /tmp \
   && npm install -j$(nproc) grunt-sass@"^1.0.0" \
+  && cd /tmp/node_modules/node-sass \
+  && node scripts/build -f -j $(nproc) \
   && cp /tmp/node_modules/node-sass/vendor/linux-x64-48/binding.node /root/.npm/node-sass/3.13.1/linux-x64-48_binding.node \
   && rm /tmp/* -rf \
   && cp -a ~/.npm ~www-data/.npm \

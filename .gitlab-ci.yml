@@ -16,6 +16,7 @@ php_image:
     docker push ubleipzig/vufind-php:${version}-${suffix}
     for tag in "latest" "{major_version}" "${version}"; do
       if [ "$tag" == "latest" -a "${version}" != "7.2" ]; then continue; fi
+      if [ "$tag" == "7" -a "${version}" != "7.2" ]; then continue; fi
       docker tag ubleipzig/vufind-php:${version}-${suffix} ubleipzig/vufind-php:${tag}
       docker push ubleipzig/vufind-php:${tag}
     done
@@ -44,10 +45,10 @@ php_vufind1_image:
     export major_version=`expr ${version} ':' '\([^.]\+\)'`
     export minor_version=`expr ${version} ':' '[^.]\+\.\([^-]\+\)'`
     export suffix=`expr ${CI_COMMIT_TAG} ':' 'vufind1/[^-]\+-\(.*\)'`
-    docker build -t ubleipzig/vufind-php:${version}-${suffix}-vufind1-debug -f ${version}/vufind1/debug/Dockerfile .
-    docker push ubleipzig/vufind-php:${version}-${suffix}-vufind1-debug
-    for tag in "{major_version}-vufind1-debug" "${version}-vufind1-debug" "vufind1-debug"; do
-      docker tag ubleipzig/vufind-php:${version}-${suffix}-vufind1-debug ubleipzig/vufind-php:${tag}
+    docker build -t ubleipzig/vufind-php:vufind1-${version}-${suffix}-debug -f ${version}/vufind1/debug/Dockerfile .
+    docker push ubleipzig/vufind-php:vufind1-${version}-${suffix}-debug
+    for tag in "vufind1-{major_version}-debug" "vufind1-${version}-debug" "vufind1-debug"; do
+      docker tag ubleipzig/vufind-php:vufind1-${version}-${suffix}-debug ubleipzig/vufind-php:${tag}
       docker push ubleipzig/vufind-php:${tag}
     done
   tags:

@@ -1,4 +1,4 @@
-FROM php:7.1-fpm-alpine
+FROM php:7.2-fpm-alpine
 ENTRYPOINT [ "/docker-entrypoint" ]
 
 ENV VUFIND_CACHE_DIR=/var/cache/vufind \

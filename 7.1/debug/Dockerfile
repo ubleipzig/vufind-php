@@ -1,5 +1,6 @@
 FROM ubleipzig/vufind-php:7.1
-ENV VUFIND_ENV=development
+ENV VUFIND_ENV=development \
+  NODE_ENV=development
 
 COPY assets/docker-entrypoint-debug /docker-entrypoint
 

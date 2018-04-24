@@ -1,12 +1,11 @@
-FROM ubleipzig/vufind-php:5.6
-
+FROM ubleipzig/vufind-php:7.2
 ENV VUFIND_ENV=development \
   NODE_ENV=development
 
 COPY assets/docker-entrypoint-debug /docker-entrypoint
 
-RUN apk add --no-cache --update autoconf \
-  && pecl install xdebug-2.5.5 \
+RUN apk add autoconf \
+  && pecl install xdebug \
   && docker-php-ext-enable xdebug \
   && apk del autoconf \
   && sed -i '1 a xdebug.remote_autostart=true' /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
