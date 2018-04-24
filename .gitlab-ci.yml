@@ -13,6 +13,7 @@ php_image:
     export minor_version=`expr ${version} ':' '[^.]\+\.\([^-]\+\)'`
     export suffix=`expr ${CI_COMMIT_TAG} ':' '[^-]\+-\(.*\)'`
     docker build -t ubleipzig/vufind-php:${version}-${suffix} -f ${version}/Dockerfile .
+    docker build -t ubleipzig/vufind-php:${version}-${suffix}-debug -f ${version}/debug/Dockerfile .
     docker push ubleipzig/vufind-php:${version}-${suffix}
     for tag in "latest" "{major_version}" "${version}"; do
       if [ "$tag" == "latest" -a "${version}" != "7.2" ]; then continue; fi
@@ -20,7 +21,6 @@ php_image:
       docker tag ubleipzig/vufind-php:${version}-${suffix} ubleipzig/vufind-php:${tag}
       docker push ubleipzig/vufind-php:${tag}
     done
-    docker build -t ubleipzig/vufind-php:${version}-${suffix}-debug -f ${version}/debug/Dockerfile .
     docker push ubleipzig/vufind-php:${version}-${suffix}-debug
     for tag in "latest-debug" "{major_version}-debug" "${version}-debug"; do
       if [ "$tag" == "latest-debug" -a "${version}" != "7.2" ]; then continue; fi
