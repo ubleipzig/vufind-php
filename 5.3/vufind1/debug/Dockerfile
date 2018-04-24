@@ -5,7 +5,7 @@ ENV VUFIND_CACHE_DIR=/var/cache/vufind \
   VUFIND_APPLICATION_PATH=/usr/local/vufind \
   VUFIND_ENV=development
 
-COPY assets/entrypoint-debug /docker-entrypoint
+COPY assets/docker-entrypoint-debug /docker-entrypoint
 
 RUN apk add --no-cache --update icu-dev freetype-dev libjpeg-turbo-dev libmcrypt-dev libpng-dev libxslt-dev postgresql-dev zlib-dev bzip2-dev autoconf mariadb-dev \
   && apk add libpng libjpeg-turbo freetype icu-libs libpq libmcrypt libxslt mariadb-client-libs python make g++ coreutils nodejs git subversion mariadb-client openssh openssl bash \
