@@ -8,7 +8,7 @@ ENV VUFIND_CACHE_DIR=/var/cache/vufind \
   NODE_ENV=production \
   npm_config_registry=https://services.ub.uni-leipzig.de/nexus/repository/npm/
 
-COPY assets/entrypoint-php /docker-entrypoint
+COPY assets/docker-entrypoint /docker-entrypoint
 
 RUN apk add --no-cache --update --virtual .build-deps icu-dev freetype-dev libjpeg-turbo-dev libmcrypt-dev libpng-dev libxslt-dev postgresql-dev zlib-dev bzip2-dev autoconf \
   && apk add libpng libjpeg-turbo freetype icu-libs libpq libmcrypt libxslt python make g++ coreutils nodejs nodejs-npm git subversion openssh openssl bash \
