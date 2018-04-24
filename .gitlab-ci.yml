@@ -54,6 +54,6 @@ php_vufind1_image:
   tags:
   - docker
   only:
-  - /^vufind1-/
+  - /^vufind1\//
   except:
   - branches
