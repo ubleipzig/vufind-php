@@ -1,4 +1,4 @@
-FROM php:5.6-fpm-alpine
+FROM php:5.6-fpm-alpine3.7
 ENTRYPOINT [ "/docker-entrypoint" ]
 
 ENV VUFIND_CACHE_DIR=/var/cache/vufind \
@@ -10,7 +10,7 @@ ENV VUFIND_CACHE_DIR=/var/cache/vufind \
 
 COPY assets/docker-entrypoint /docker-entrypoint
 
-RUN apk add --no-cache --update --virtual .build-deps icu-dev freetype-dev libjpeg-turbo-dev libmcrypt-dev libpng-dev libxslt-dev postgresql-dev zlib-dev bzip2-dev \
+RUN apk add --no-cache --update --virtual .build-deps icu-dev freetype-dev libjpeg-turbo-dev libmcrypt-dev libpng-dev libxslt-dev postgresql-dev zlib-dev bzip2-dev autoconf \
   && apk add libpng libjpeg-turbo freetype icu-libs libpq libmcrypt libxslt python make g++ coreutils nodejs git subversion openssh openssl bash \
   && docker-php-ext-configure gd --with-freetype-dir=/usr/include --with-jpeg-dir=/usr/include \
   && docker-php-ext-install -j$(nproc) intl mysqli pdo_pgsql pdo_mysql pdo gd xsl mcrypt intl soap zip bz2 \
@@ -21,7 +21,8 @@ RUN apk add --no-cache --update --virtual .build-deps icu-dev freetype-dev libjp
   && npm install -j$(nproc) grunt-sass@"^1.0.0" \
   && cd /tmp/node_modules/node-sass \
   && node scripts/build -f -j $(nproc) \
-  && cp /tmp/node_modules/node-sass/vendor/linux-x64-48/binding.node /root/.npm/node-sass/3.13.1/linux-x64-48_binding.node \
+  && SASS_VER=`ls /tmp/node_modules/node-sass/vendor/` \
+  && cp /tmp/node_modules/node-sass/vendor/${SASS_VER}/binding.node /root/.npm/node-sass/3.13.1/${SASS_VER}_binding.node \
   && rm /tmp/* -rf \
   && cp -a ~/.npm ~www-data/.npm \
   && chown www-data:www-data ~www-data/.npm -R \
