@@ -1,4 +1,5 @@
 FROM ubleipzig/vufind-php:5.6
+VOLUME [ "/home/www-data/.npm", "/home/www-data/.composer" ]
 
 ENV VUFIND_ENV=development \
   NODE_ENV=development

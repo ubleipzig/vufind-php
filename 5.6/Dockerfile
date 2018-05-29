@@ -1,6 +1,6 @@
 FROM php:5.6-fpm-alpine3.7
+VOLUME [ "/var/cache/vufind", "/usr/local/vufind" ]
 ENTRYPOINT [ "/docker-entrypoint" ]
-
 ENV VUFIND_CACHE_DIR=/var/cache/vufind \
   VUFIND_APPLICATION_PATH=/usr/local/vufind \
   VUFIND_LOCAL_DIR=/usr/local/vufind/local \
