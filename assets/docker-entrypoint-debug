@@ -12,7 +12,6 @@ APP_USER_HOME=`grep -e '^www-data' /etc/passwd | awk -F":" '{ print $6; }'`
 
 # we do not allow root to be the app user
 if [ "$APP_UID" == "0" -o "$APP_GID" == "0" ]; then
-	echo "Setting app user to UID:1000 and GID:1000 ..."
 	APP_UID="1000"
 	APP_GID="1000"
 	chown ${APP_UID}:${APP_GID} ${VUFIND_APPLICATION_PATH} -R
@@ -23,7 +22,7 @@ sed -e "s!^\(www-data:x\):[0-9]\+:\(.*\)\$!\1:${APP_GID}:\2!" -i /etc/group
 
 mkdir -p ${VUFIND_CACHE_DIR}
 
-chown www-data:www-data ${VUFIND_APPLICATION_PATH} ${VUFIND_CACHE_DIR} -R
+chown www-data:www-data ${VUFIND_APPLICATION_PATH} ${VUFIND_CACHE_DIR} ~www-data -R
 
 # first arg is `-f` or `--some-option`
 if [ "${1#-}" != "$1" -o "$1" == "php-fpm" ]; then
