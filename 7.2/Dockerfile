@@ -6,8 +6,7 @@ ENV VUFIND_CACHE_DIR=/var/cache/vufind \
   VUFIND_APPLICATION_PATH=/usr/local/vufind \
   VUFIND_LOCAL_DIR=/usr/local/vufind/local \
   VUFIND_ENV=production \
-  NODE_ENV=production \
-  npm_config_registry=https://services.ub.uni-leipzig.de/nexus/repository/npm/
+  NODE_ENV=production
 
 COPY assets/docker-entrypoint /docker-entrypoint
 
@@ -18,7 +17,7 @@ RUN apk add --no-cache --update --virtual .build-deps icu-dev freetype-dev libjp
   && pecl install mcrypt-1.0.1 \
   && docker-php-ext-enable mcrypt \
   && apk del .build-deps \
-  && npm install -g autoconfig eslint@"<3.0.0" \
+  && npm install -g @ubleipzig/autoconfig eslint@"<3.0.0" \
   # hack for issue https://github.com/sass/node-sass/issues/1757
   && cd /tmp \
   && npm install -j$(nproc) grunt-sass@"^1.0.0" \
