@@ -1,5 +1,6 @@
 stages:
 - image
+- mirror
 
 php_image:
   stage: image
@@ -57,3 +58,20 @@ php_vufind1_image:
   - /^vufind1-/
   except:
   - branches
+
+github_mirror:
+  stage: mirror
+  image:
+    name: alpine/git
+    entrypoint: [ "/bin/sh", "-c" ]
+  variables:
+    GIT_STRATEGY: clone
+    GIT_CHECKOUT: "false"
+  script: |
+    cd /tmp
+    git clone --mirror ${CI_REPOSITORY_URL} project
+    cd project
+    git remote add github https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com/ubleipzig/vufind-php.git
+    git push --mirror github
+  tags:
+  - docker
