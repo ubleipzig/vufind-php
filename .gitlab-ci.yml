@@ -16,15 +16,15 @@ php_image:
     docker build -t ubleipzig/vufind-php:${version}-${suffix} -f ${version}/Dockerfile .
     docker push ubleipzig/vufind-php:${version}-${suffix}
     for tag in "latest" "${major_version}" "${version}"; do
-      if [ "$tag" == "latest" -a "${version}" != "7.2" ]; then continue; fi
-      if [ "$tag" == "7" -a "${version}" != "7.2" ]; then continue; fi
+      if [ "$tag" == "latest" -a "${version}" != "7.3" ]; then continue; fi
+      if [ "$tag" == "7" -a "${version}" != "7.3" ]; then continue; fi
       docker tag ubleipzig/vufind-php:${version}-${suffix} ubleipzig/vufind-php:${tag}
       docker push ubleipzig/vufind-php:${tag}
     done
     docker build -t ubleipzig/vufind-php:${version}-${suffix}-debug -f ${version}/debug/Dockerfile .
     docker push ubleipzig/vufind-php:${version}-${suffix}-debug
     for tag in "latest-debug" "${major_version}-debug" "${version}-debug"; do
-      if [ "$tag" == "latest-debug" -a "${version}" != "7.2" ]; then continue; fi
+      if [ "$tag" == "latest-debug" -a "${version}" != "7.3" ]; then continue; fi
       docker tag ubleipzig/vufind-php:${version}-${suffix}-debug ubleipzig/vufind-php:${tag}
       docker push ubleipzig/vufind-php:${tag}
     done
