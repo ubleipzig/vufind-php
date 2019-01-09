@@ -1,47 +1,85 @@
 stages:
-- image
+- build
+- publish
 - mirror
 
-php_image:
-  stage: image
+build_images:
+  stage: build
   image: docker:latest
   services:
   - docker:dind
   script: |
-    mkdir -p ~/.docker && echo "$DOCKER_AUTH_CONFIG" >~/.docker/config.json
+    mkdir -p ~/.docker && echo "$DOCKER_PRODUCTION_AUTH_CONFIG" >~/.docker/config.json
+
+    for dir in 5.6{,/debug} 7.1{,/debug} 7.2{,/debug} 7.3{,/debug}; do
+      version=${dir//\//-}
+      majorminor=${dir%%/*}
+      if [ "${CI_COMMIT_TAG}" != "" -a "${CI_COMMIT_TAG%-*}" != "${majorminor}" ]; then echo not building for "$majorminor"; continue; fi
+      test -f image-${version}.gz && docker load --input image-${version}.gz
+      docker build --pull --cache-from image-${version} -t image-${version} -f ${dir}/Dockerfile .
+      if [ "${dir##*/}" != "debug" ]; then docker tag image-${version} ubleipzig/vufind-php:${majorminor};fi
+      docker save image-${version} --output image-${version}.gz
+    done
+  artifacts:
+    name: docker-images
+    paths:
+    - "image-*.gz"
+  tags:
+  - docker
+
+publish_images:
+  stage: publish
+  image: docker:latest
+  services:
+  - docker:dind
+  script: |
+    mkdir -p ~/.docker && echo "$DOCKER_PRODUCTION_AUTH_CONFIG" >~/.docker/config.json
     export version=`expr ${CI_COMMIT_TAG} ':' '\([^-]\+\)'`
     export major_version=`expr ${version} ':' '\([^.]\+\)'`
     export minor_version=`expr ${version} ':' '[^.]\+\.\([^-]\+\)'`
     export suffix=`expr ${CI_COMMIT_TAG} ':' '[^-]\+-\(.*\)'`
-    docker build -t ubleipzig/vufind-php:${version}-${suffix} -f ${version}/Dockerfile .
-    docker push ubleipzig/vufind-php:${version}-${suffix}
-    for tag in "latest" "${major_version}" "${version}"; do
-      if [ "$tag" == "latest" -a "${version}" != "7.3" ]; then continue; fi
-      if [ "$tag" == "7" -a "${version}" != "7.3" ]; then continue; fi
-      docker tag ubleipzig/vufind-php:${version}-${suffix} ubleipzig/vufind-php:${tag}
-      docker push ubleipzig/vufind-php:${tag}
-    done
-    docker build -t ubleipzig/vufind-php:${version}-${suffix}-debug -f ${version}/debug/Dockerfile .
-    docker push ubleipzig/vufind-php:${version}-${suffix}-debug
-    for tag in "latest-debug" "${major_version}-debug" "${version}-debug"; do
-      if [ "$tag" == "latest-debug" -a "${version}" != "7.3" ]; then continue; fi
-      docker tag ubleipzig/vufind-php:${version}-${suffix}-debug ubleipzig/vufind-php:${tag}
-      docker push ubleipzig/vufind-php:${tag}
-    done
+    majorminor="${major_version}.${minor_version}"
+
+    if [ -f "image-${major_version}.${minor_version}.gz" ]; then
+      docker load --input image-${major_version}.${minor_version}.gz
+      docker tag image-${major_version}.${minor_version} ubleipzig/vufind-php:${version}-${suffix}
+
+      docker push ubleipzig/vufind-php:${version}-${suffix}
+      for tag in "latest" "${major_version}" "${version}"; do
+        if [ "$tag" == "latest" -a "${version}" != "7.3" ]; then continue; fi
+        if [ "$tag" == "7" -a "${version}" != "7.3" ]; then continue; fi
+        docker tag ubleipzig/vufind-php:${version}-${suffix} ubleipzig/vufind-php:${tag}
+        docker push ubleipzig/vufind-php:${tag}
+      done
+    fi
+
+    if [ -f "image-${major_version}.${minor_version}-debug.gz" ]; then
+      docker load --input image-${major_version}.${minor_version}-debug.gz
+      docker tag image-${major_version}.${minor_version} ubleipzig/vufind-php:${version}-${suffix}-debug
+
+      docker push ubleipzig/vufind-php:${version}-${suffix}-debug
+      for tag in "latest-debug" "${major_version}-debug" "${version}-debug"; do
+        if [ "$tag" == "latest-debug" -a "${version}" != "7.3" ]; then continue; fi
+        docker tag ubleipzig/vufind-php:${version}-${suffix}-debug ubleipzig/vufind-php:${tag}
+        docker push ubleipzig/vufind-php:${tag}
+      done
+    fi
   tags:
   - docker
   only:
   - /^[57]\.\d+/
+  dependencies:
+  - build_images
   except:
   - branches
 
 php_vufind1_image:
-  stage: image
+  stage: publish
   image: docker:latest
   services:
   - docker:dind
   script: |
-    mkdir -p ~/.docker && echo "$DOCKER_AUTH_CONFIG" >~/.docker/config.json
+    mkdir -p ~/.docker && echo "$DOCKER_PRODUCTION_AUTH_CONFIG" >~/.docker/config.json
     export version=`expr ${CI_COMMIT_TAG} ':' 'vufind1-\([^-]\+\)'`
     export major_version=`expr ${version} ':' '\([^.]\+\)'`
     export minor_version=`expr ${version} ':' '[^.]\+\.\([^-]\+\)'`
