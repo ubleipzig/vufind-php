@@ -1,4 +1,4 @@
-FROM php:7.2-fpm-alpine3.8
+FROM php:7.3-fpm-alpine3.8
 ENTRYPOINT [ "/docker-entrypoint" ]
 VOLUME [ "/var/cache/vufind", "/usr/local/vufind" ]
 
@@ -6,16 +6,15 @@ ENV VUFIND_CACHE_DIR=/var/cache/vufind \
   VUFIND_APPLICATION_PATH=/usr/local/vufind \
   VUFIND_LOCAL_DIR=/usr/local/vufind/local \
   VUFIND_ENV=production \
-  NODE_ENV=production
+  NODE_ENV=production \
+  LIBRARY_PATH=/lib:/usr/lib
 
 COPY assets/docker-entrypoint /docker-entrypoint
 
-RUN apk add --no-cache --update --virtual .build-deps icu-dev freetype-dev libjpeg-turbo-dev libmcrypt-dev libpng-dev libxslt-dev postgresql-dev zlib-dev bzip2-dev libzip-dev autoconf \
-  && apk add libpng libjpeg-turbo freetype icu-libs libpq libmcrypt libxslt libzip python make g++ coreutils nodejs nodejs-npm git subversion openssh openssl bash \
+RUN apk add --no-cache --update --virtual .build-deps icu-dev freetype-dev libjpeg-turbo-dev libpng-dev libxslt-dev postgresql-dev zlib-dev libzip-dev bzip2-dev autoconf \
+  && apk add libpng libjpeg-turbo freetype icu-libs libpq libxslt libzip python make g++ coreutils nodejs nodejs-npm git subversion openssh openssl bash \
   && docker-php-ext-configure gd --with-freetype-dir=/usr/include --with-jpeg-dir=/usr/include \
-  && docker-php-ext-install -j$(nproc) intl mysqli pdo_pgsql pdo_mysql pdo gd xsl soap zip bz2 \
-  && pecl install mcrypt-1.0.1 \
-  && docker-php-ext-enable mcrypt \
+  && docker-php-ext-install -j$(nproc) zip mysqli pdo_pgsql pdo_mysql pdo gd xsl intl soap bz2 \
   && apk del .build-deps \
   && npm install -g @ubleipzig/autoconfig eslint@"<3.0.0" \
   # hack for issue https://github.com/sass/node-sass/issues/1757
