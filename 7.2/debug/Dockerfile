@@ -1,4 +1,4 @@
-FROM ubleipzig/vufind-php:7.2
+FROM image-7.2
 VOLUME [ "/home/www-data/.npm", "/home/www-data/.composer" ]
 
 ENV VUFIND_ENV=development \
@@ -7,6 +7,7 @@ ENV VUFIND_ENV=development \
 COPY assets/docker-entrypoint-debug /docker-entrypoint
 
 RUN apk add autoconf \
+  && pear config-set http_proxy "`printenv http_proxy`" \
   && pecl install xdebug \
   && docker-php-ext-enable xdebug \
   && apk del autoconf \

@@ -12,6 +12,7 @@ COPY assets/docker-entrypoint /docker-entrypoint
 
 RUN apk add --no-cache --update --virtual .build-deps icu-dev freetype-dev libjpeg-turbo-dev libmcrypt-dev libpng-dev libxslt-dev postgresql-dev zlib-dev bzip2-dev libzip-dev autoconf \
   && apk add libpng libjpeg-turbo freetype icu-libs libpq libmcrypt libxslt libzip python make g++ coreutils nodejs nodejs-npm git subversion openssh openssl bash \
+  && pear config-set http_proxy "`printenv http_proxy`" \
   && docker-php-ext-configure gd --with-freetype-dir=/usr/include --with-jpeg-dir=/usr/include \
   && docker-php-ext-install -j$(nproc) intl mysqli pdo_pgsql pdo_mysql pdo gd xsl soap zip bz2 \
   && pecl install mcrypt-1.0.0 \
