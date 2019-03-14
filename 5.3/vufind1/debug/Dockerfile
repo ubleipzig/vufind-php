@@ -8,7 +8,7 @@ ENV VUFIND_CACHE_DIR=/var/cache/vufind \
 COPY assets/docker-entrypoint-debug /docker-entrypoint
 
 RUN apk add --no-cache --update icu-dev freetype-dev libjpeg-turbo-dev libmcrypt-dev libpng-dev libxslt-dev postgresql-dev zlib-dev bzip2-dev autoconf mariadb-dev \
-  && apk add libpng libjpeg-turbo freetype icu-libs libpq libmcrypt libxslt mariadb-client-libs python make g++ coreutils nodejs git subversion mariadb-client openssh openssl bash \
+  && apk add --no-cache --update libpng libjpeg-turbo freetype icu-libs libpq libmcrypt libxslt mariadb-client-libs python make g++ coreutils nodejs git subversion mariadb-client openssh openssl bash wget ca-certificates \
   && pear config-set http_proxy "`printenv http_proxy`" \
   && docker-php-ext-configure gd --with-freetype-dir=/usr/include --with-jpeg-dir=/usr/include \
   && docker-php-ext-install -j$(nproc) mysql gd xsl mcrypt intl zip bz2 \
@@ -31,7 +31,7 @@ RUN apk add --no-cache --update icu-dev freetype-dev libjpeg-turbo-dev libmcrypt
   && echo 'php_admin_value[display_errors] = 0' >> /usr/local/etc/php-fpm.d/www.conf \
   && echo 'php_admin_value[log_errors] = 1' >> /usr/local/etc/php-fpm.d/www.conf \
   && echo 'php_admin_value[error_reporting] = 2047' >> /usr/local/etc/php-fpm.d/www.conf \
-  && wget -O - https://github.com/smarty-php/smarty/archive/v2.6.26.tar.gz | tar -C /tmp/ -zxvf - smarty-2.6.26/libs \
+  && curl -Ls https://github.com/smarty-php/smarty/archive/v2.6.26.tar.gz | tar -C /tmp/ -zxvf - smarty-2.6.26/libs \
   && mv /tmp/smarty-2.6.26/libs /usr/local/lib/php/Smarty \
   && rm /tmp/* -rf \
   && pear channel-discover pear.phing.info \

@@ -6,7 +6,7 @@ ENV VUFIND_ENV=development \
 
 COPY assets/docker-entrypoint-debug /docker-entrypoint
 
-RUN apk add autoconf \
+RUN apk add --no-cache --update autoconf \
   && pear config-set http_proxy "`printenv http_proxy`" \
   && pecl install xdebug \
   && docker-php-ext-enable xdebug \

@@ -3,27 +3,29 @@ stages:
 - publish
 - mirror
 
-build_images:
+build_images_56:
   stage: build
-  image: docker:latest
+  image: ubleipzig/deployer:1.4.4
   services:
   - docker:dind
   script: |
-    mkdir -p ~/.docker && echo "$DOCKER_PRODUCTION_AUTH_CONFIG" >~/.docker/config.json
+    deployer build \
+    --build-arg HTTP_PROXY=${HTTP_PROXY} \
+    --build-arg HTTPS_PROXY=${HTTPS_PROXY} \
+    --build-arg FTP_PROXY=${FTP_PROXY} \
+    --build-arg NO_PROXY=${NO_PROXY} \
+    --output image-5.6.gz \
+    --image-name image-5.6 \
+    --docker-file 5.6/Dockerfile
 
-    for dir in 5.6 5.6/debug 7.1 7.1/debug 7.2 7.2/debug 7.3 7.3/debug; do
-      version=${dir//\//-}
-      majorminor=${dir%%/*}
-      if [ "${CI_COMMIT_TAG}" != "" -a "${CI_COMMIT_TAG%-*}" != "${majorminor}" ]; then echo not building for "$majorminor"; continue; fi
-      echo "building image image-${version}"
-      test -f image-${version}.gz && docker load --input image-${version}.gz
-      docker build --cache-from image-${version} \
-      --build-arg http_proxy=${HTTP_PROXY} \
-      --build-arg https_proxy=${HTTPS_PROXY} \
-      -t image-${version} -f ${dir}/Dockerfile .
-      echo "saving image image-${version}"
-      docker save image-${version} --output image-${version}.gz
-    done
+    deployer build \
+    --build-arg HTTP_PROXY=${HTTP_PROXY} \
+    --build-arg HTTPS_PROXY=${HTTPS_PROXY} \
+    --build-arg FTP_PROXY=${FTP_PROXY} \
+    --build-arg NO_PROXY=${NO_PROXY} \
+    --output image-5.6-debug.gz \
+    --image-name image-5.6-debug \
+    --docker-file 5.6/debug/Dockerfile
   artifacts:
     name: docker-images
     paths:
@@ -31,79 +33,261 @@ build_images:
   tags:
   - docker
 
-publish_images:
-  stage: publish
-  image: docker:latest
+build_images_71:
+  stage: build
+  image: ubleipzig/deployer:1.4.4
   services:
   - docker:dind
   script: |
-    mkdir -p ~/.docker && echo "$DOCKER_PRODUCTION_AUTH_CONFIG" >~/.docker/config.json
-    export version=`expr ${CI_COMMIT_TAG} ':' '\([^-]\+\)'`
-    export major_version=`expr ${version} ':' '\([^.]\+\)'`
-    export minor_version=`expr ${version} ':' '[^.]\+\.\([^-]\+\)'`
-    export suffix=`expr ${CI_COMMIT_TAG} ':' '[^-]\+-\(.*\)'`
-    majorminor="${major_version}.${minor_version}"
+    ## if this job results from a tag we only build for the tag's version
+    if [ "${CI_COMMIT_TAG}" != "" -a "${CI_COMMIT_TAG%-*}" != "${majorminor}" ]; then echo not building for "$majorminor"; exit 0; fi
 
-    if [ -f "image-${major_version}.${minor_version}.gz" ]; then
-      docker load --input image-${major_version}.${minor_version}.gz
-      docker tag image-${major_version}.${minor_version} ubleipzig/vufind-php:${version}-${suffix}
+    deployer build \
+    --build-arg HTTP_PROXY=${HTTP_PROXY} \
+    --build-arg HTTPS_PROXY=${HTTPS_PROXY} \
+    --build-arg FTP_PROXY=${FTP_PROXY} \
+    --build-arg NO_PROXY=${NO_PROXY} \
+    --output image-7.1.gz \
+    --image-name image-7.1 \
+    --docker-file 7.1/Dockerfile
 
-      docker push ubleipzig/vufind-php:${version}-${suffix}
-      for tag in "latest" "${major_version}" "${version}"; do
-        if [ "$tag" == "latest" -a "${version}" != "7.3" ]; then continue; fi
-        if [ "$tag" == "7" -a "${version}" != "7.3" ]; then continue; fi
-        docker tag ubleipzig/vufind-php:${version}-${suffix} ubleipzig/vufind-php:${tag}
-        docker push ubleipzig/vufind-php:${tag}
-      done
-    fi
+    deployer build \
+    --build-arg HTTP_PROXY=${HTTP_PROXY} \
+    --build-arg HTTPS_PROXY=${HTTPS_PROXY} \
+    --build-arg FTP_PROXY=${FTP_PROXY} \
+    --build-arg NO_PROXY=${NO_PROXY} \
+    --output image-7.1-debug.gz \
+    --image-name image-7.1-debug \
+    --docker-file 7.1/debug/Dockerfile
+  artifacts:
+    name: docker-images
+    paths:
+    - "image-*.gz"
+  tags:
+  - docker
 
-    if [ -f "image-${major_version}.${minor_version}-debug.gz" ]; then
-      docker load --input image-${major_version}.${minor_version}-debug.gz
-      docker tag image-${major_version}.${minor_version} ubleipzig/vufind-php:${version}-${suffix}-debug
+build_images_72:
+  stage: build
+  image: ubleipzig/deployer:1.4.4
+  services:
+  - docker:dind
+  script: |
+    ## if this job results from a tag we only build for the tag's version
+    if [ "${CI_COMMIT_TAG}" != "" -a "${CI_COMMIT_TAG%-*}" != "${majorminor}" ]; then echo not building for "$majorminor"; exit 0; fi
 
-      docker push ubleipzig/vufind-php:${version}-${suffix}-debug
-      for tag in "latest-debug" "${major_version}-debug" "${version}-debug"; do
-        if [ "$tag" == "latest-debug" -a "${version}" != "7.3" ]; then continue; fi
-        docker tag ubleipzig/vufind-php:${version}-${suffix}-debug ubleipzig/vufind-php:${tag}
-        docker push ubleipzig/vufind-php:${tag}
-      done
-    fi
+    deployer build \
+    --build-arg HTTP_PROXY=${HTTP_PROXY} \
+    --build-arg HTTPS_PROXY=${HTTPS_PROXY} \
+    --build-arg FTP_PROXY=${FTP_PROXY} \
+    --build-arg NO_PROXY=${NO_PROXY} \
+    --output image-7.2.gz \
+    --image-name image-7.2 \
+    --docker-file 7.2/Dockerfile
+
+    deployer build \
+    --build-arg HTTP_PROXY=${HTTP_PROXY} \
+    --build-arg HTTPS_PROXY=${HTTPS_PROXY} \
+    --build-arg FTP_PROXY=${FTP_PROXY} \
+    --build-arg NO_PROXY=${NO_PROXY} \
+    --output image-7.2-debug.gz \
+    --image-name image-7.2-debug \
+    --docker-file 7.2/debug/Dockerfile
+  artifacts:
+    name: docker-images
+    paths:
+    - "image-*.gz"
+  tags:
+  - docker
+
+build_images_73:
+  stage: build
+  image: ubleipzig/deployer:1.4.4
+  services:
+  - docker:dind
+  script: |
+    ## if this job results from a tag we only build for the tag's version
+    if [ "${CI_COMMIT_TAG}" != "" -a "${CI_COMMIT_TAG%-*}" != "${majorminor}" ]; then echo not building for "$majorminor"; exit 0; fi
+
+    deployer build \
+    --build-arg HTTP_PROXY=${HTTP_PROXY} \
+    --build-arg HTTPS_PROXY=${HTTPS_PROXY} \
+    --build-arg FTP_PROXY=${FTP_PROXY} \
+    --build-arg NO_PROXY=${NO_PROXY} \
+    --output image-7.3.gz \
+    --image-name image-7.3 \
+    --docker-file 7.3/Dockerfile
+
+    deployer build \
+    --build-arg HTTP_PROXY=${HTTP_PROXY} \
+    --build-arg HTTPS_PROXY=${HTTPS_PROXY} \
+    --build-arg FTP_PROXY=${FTP_PROXY} \
+    --build-arg NO_PROXY=${NO_PROXY} \
+    --output image-7.3-debug.gz \
+    --image-name image-7.3-debug \
+    --docker-file 7.3/debug/Dockerfile
+  artifacts:
+    name: docker-images
+    paths:
+    - "image-*.gz"
+  tags:
+  - docker
+
+## u.s. not working due to proxy-issues (pear+https)
+# build_images_53_vufind1:
+#   stage: build
+#   image: ubleipzig/deployer:1.4.4
+#   services:
+#   - docker:dind
+#   script: |
+#     ## if this job results from a tag we only build for the tag's version
+#     if [ "${CI_COMMIT_TAG}" != "" -a "${CI_COMMIT_TAG%-*}" != "${majorminor}" ]; then echo not building for "$majorminor"; exit 0; fi
+
+#     deployer build \
+#     --build-arg HTTP_PROXY=${HTTP_PROXY} \
+#     --build-arg HTTPS_PROXY=${HTTPS_PROXY} \
+#     --build-arg FTP_PROXY=${FTP_PROXY} \
+#     --build-arg NO_PROXY=${NO_PROXY} \
+#     --output image-5.3-vufind1-debug.gz \
+#     --image-name image-5.3-vufind1 \
+#     --docker-file 5.3/vufind1/debug/Dockerfile
+#   artifacts:
+#     name: docker-images
+#     paths:
+#     - "image-*.gz"
+#   tags:
+#   - docker
+
+publish_production_images_56:
+  stage: publish
+  image: ubleipzig/deployer:1.4.4
+  services:
+  - docker:dind
+  script: |
+    declare suffix=`expr ${CI_COMMIT_TAG} ':' '[^-]\+-\(.*\)'`
+
+    deployer publish \
+    --input image-5.6.gz \
+    --tag ubleipzig/vufind-php:5.6-${suffix} \
+    --tag ubleipzig/vufind-php:5.6 \
+    --tag ubleipzig/vufind-php:5
+
+    deployer publish \
+    --input image-5.6-debug.gz \
+    --tag ubleipzig/vufind-php:5.6-${suffix}-debug \
+    --tag ubleipzig/vufind-php:5.6-debug \
+    --tag ubleipzig/vufind-php:5-debug
   tags:
   - docker
   only:
-  - /^[57]\.\d+/
+  - /^5\.6-\d+/
   dependencies:
-  - build_images
+  - build_images_56
   except:
   - branches
 
-php_vufind1_image:
+publish_production_images_71:
   stage: publish
-  image: docker:latest
+  image: ubleipzig/deployer:1.4.4
   services:
   - docker:dind
   script: |
-    mkdir -p ~/.docker && echo "$DOCKER_PRODUCTION_AUTH_CONFIG" >~/.docker/config.json
-    export version=`expr ${CI_COMMIT_TAG} ':' 'vufind1-\([^-]\+\)'`
-    export major_version=`expr ${version} ':' '\([^.]\+\)'`
-    export minor_version=`expr ${version} ':' '[^.]\+\.\([^-]\+\)'`
-    export suffix=`expr ${CI_COMMIT_TAG} ':' 'vufind1-[^-]\+-\(.*\)'`
-    docker build \
-      -t ubleipzig/vufind-php:vufind1-${version}-${suffix}-debug \
-      --build-arg http_proxy=${HTTP_PROXY} \
-      --build-arg HTTPS_PROXY=${HTTPS_PROXY} \
-      -f ${version}/vufind1/debug/Dockerfile . >/dev/null
-    docker push ubleipzig/vufind-php:vufind1-${version}-${suffix}-debug
-    for tag in "vufind1-${major_version}-debug" "vufind1-${version}-debug" "vufind1-debug"; do
-      docker tag ubleipzig/vufind-php:vufind1-${version}-${suffix}-debug ubleipzig/vufind-php:${tag}
-      docker push ubleipzig/vufind-php:${tag}
-    done
+    declare suffix=`expr ${CI_COMMIT_TAG} ':' '[^-]\+-\(.*\)'`
+
+    deployer publish \
+    --input image-7.1.gz \
+    --tag ubleipzig/vufind-php:7.1-${suffix} \
+    --tag ubleipzig/vufind-php:7.1 \
+    --tag ubleipzig/vufind-php:5
+
+    deployer publish \
+    --input image-7.1-debug.gz \
+    --tag ubleipzig/vufind-php:7.1-${suffix}-debug \
+    --tag ubleipzig/vufind-php:7.1-debug
   tags:
   - docker
   only:
-  - /^vufind1-/
+  - /^7\.1-\d+/
+  dependencies:
+  - build_images_71
   except:
   - branches
+
+
+publish_production_images_72:
+  stage: publish
+  image: ubleipzig/deployer:1.4.4
+  services:
+  - docker:dind
+  script: |
+    declare suffix=`expr ${CI_COMMIT_TAG} ':' '[^-]\+-\(.*\)'`
+
+    deployer publish \
+    --input image-7.2.gz \
+    --tag ubleipzig/vufind-php:7.2-${suffix} \
+    --tag ubleipzig/vufind-php:7.2
+
+    deployer publish \
+    --input image-7.2-debug.gz \
+    --tag ubleipzig/vufind-php:7.2-${suffix}-debug \
+    --tag ubleipzig/vufind-php:7.2-debug
+  tags:
+  - docker
+  only:
+  - /^7\.2-\d+/
+  dependencies:
+  - build_images_72
+  except:
+  - branches
+
+publish_production_images_73:
+  stage: publish
+  image: ubleipzig/deployer:1.4.4
+  services:
+  - docker:dind
+  script: |
+    declare suffix=`expr ${CI_COMMIT_TAG} ':' '[^-]\+-\(.*\)'`
+
+    deployer publish \
+    --input image-7.3.gz \
+    --tag ubleipzig/vufind-php:7.3-${suffix} \
+    --tag ubleipzig/vufind-php:7.3 \
+    --tag ubleipzig/vufind-php:7
+
+    deployer publish \
+    --input image-7.3-debug.gz \
+    --tag ubleipzig/vufind-php:7.3-${suffix}-debug \
+    --tag ubleipzig/vufind-php:7.3-debug \
+    --tag ubleipzig/vufind-php:7
+  tags:
+  - docker
+  only:
+  - /^7\.3-\d+/
+  dependencies:
+  - build_images_73
+  except:
+  - branches
+
+# publish_production_images_5.3_vufind1:
+#   stage: publish
+#   image: ubleipzig/deployer:1.4.4
+#   services:
+#   - docker:dind
+#   script: |
+#     declare suffix=`expr ${CI_COMMIT_TAG} ':' 'vufind1-[^-]\+-\(.*\)'`
+
+#     deployer publish \
+#     --input image-5.3-vufind1-debug.gz \
+#     --tag ubleipzig/vufind-php:vufind1-5.3-${suffix}-debug \
+#     --tag ubleipzig/vufind-php:vufind1-5.3-debug \
+#     --tag ubleipzig/vufind-php:vufind1-5-debug
+#   tags:
+#   - docker
+#   only:
+#   - /^vufind1-5.3-\d+/
+#   dependencies:
+#   - build_images_53_vufind1
+#   except:
+#   - branches
 
 github_mirror:
   stage: mirror
