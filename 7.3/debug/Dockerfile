@@ -8,7 +8,7 @@ COPY assets/docker-entrypoint-debug /docker-entrypoint
 
 RUN apk add --no-cache --update autoconf \
   && pear config-set http_proxy "`printenv http_proxy`" \
-  && pecl install xdebug-2.7.0beta1 \
+  && pecl install xdebug \
   && docker-php-ext-enable xdebug \
   && apk del autoconf \
   && sed -i '1 a xdebug.remote_autostart=true' /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
@@ -17,5 +17,6 @@ RUN apk add --no-cache --update autoconf \
   && sed -i '1 a xdebug.remote_connect_back=1 ' /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
   && sed -i '1 a xdebug.remote_port=9000' /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
   && sed -i '1 a xdebug.remote_enable=1' /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+  && echo 'error_reporting=E_ALL' >/usr/local/etc/php/conf.d/development.ini \
   && sed -e "s!^#\s*StrictHostKeyChecking ask!StrictHostKeyChecking no!" -i /etc/ssh/ssh_config \
   && chmod a+x /docker-entrypoint

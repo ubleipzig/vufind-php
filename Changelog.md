@@ -1,5 +1,15 @@
 # Changelog
 
+
+## 2019-03-18
+### {{7.2,7.1,5.6}-10}, 7.3-2
+#### Added
+* `error_reporting = E_ALL` -#3 [debug]
+
+### 7.3-2
+#### Changed
+* stable xdebug
+
 ## 2019-01-09
 ### 7.3-1
 #### initial release, is now `latest` and `7`
