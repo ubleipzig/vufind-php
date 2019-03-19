@@ -32,6 +32,9 @@ build_images_56:
     - "image-*.gz"
   tags:
   - docker
+  only:
+  - /^5\.6-\d+/
+  - branches
 
 build_images_71:
   stage: build
@@ -39,9 +42,6 @@ build_images_71:
   services:
   - docker:dind
   script: |
-    ## if this job results from a tag we only build for the tag's version
-    if [ "${CI_COMMIT_TAG}" != "" -a "${CI_COMMIT_TAG%-*}" != "${majorminor}" ]; then echo not building for "$majorminor"; exit 0; fi
-
     deployer build \
     --build-arg HTTP_PROXY=${HTTP_PROXY} \
     --build-arg HTTPS_PROXY=${HTTPS_PROXY} \
@@ -65,6 +65,9 @@ build_images_71:
     - "image-*.gz"
   tags:
   - docker
+  only:
+  - /^7\.1-\d+/
+  - branches
 
 build_images_72:
   stage: build
@@ -72,9 +75,6 @@ build_images_72:
   services:
   - docker:dind
   script: |
-    ## if this job results from a tag we only build for the tag's version
-    if [ "${CI_COMMIT_TAG}" != "" -a "${CI_COMMIT_TAG%-*}" != "${majorminor}" ]; then echo not building for "$majorminor"; exit 0; fi
-
     deployer build \
     --build-arg HTTP_PROXY=${HTTP_PROXY} \
     --build-arg HTTPS_PROXY=${HTTPS_PROXY} \
@@ -98,6 +98,9 @@ build_images_72:
     - "image-*.gz"
   tags:
   - docker
+  only:
+  - /^7\.2-\d+/
+  - branches
 
 build_images_73:
   stage: build
@@ -105,9 +108,6 @@ build_images_73:
   services:
   - docker:dind
   script: |
-    ## if this job results from a tag we only build for the tag's version
-    if [ "${CI_COMMIT_TAG}" != "" -a "${CI_COMMIT_TAG%-*}" != "${majorminor}" ]; then echo not building for "$majorminor"; exit 0; fi
-
     deployer build \
     --build-arg HTTP_PROXY=${HTTP_PROXY} \
     --build-arg HTTPS_PROXY=${HTTPS_PROXY} \
@@ -131,6 +131,9 @@ build_images_73:
     - "image-*.gz"
   tags:
   - docker
+  only:
+  - /^7\.3-\d+/
+  - branches
 
 ## u.s. not working due to proxy-issues (pear+https)
 # build_images_53_vufind1:
