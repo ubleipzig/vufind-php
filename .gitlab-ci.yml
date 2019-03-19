@@ -151,7 +151,6 @@ build_images_73:
 #     --build-arg FTP_PROXY=${FTP_PROXY} \
 #     --build-arg NO_PROXY=${NO_PROXY} \
 #     --output image-5.3-vufind1-debug.gz \
-#     --image-name image-5.3-vufind1 \
 #     --docker-file 5.3/vufind1/debug/Dockerfile
 #   artifacts:
 #     name: docker-images
@@ -169,6 +168,7 @@ publish_production_images_56:
     declare suffix=`expr ${CI_COMMIT_TAG} ':' '[^-]\+-\(.*\)'`
 
     deployer publish \
+    --docker-config "${DOCKER_PRODUCTION_AUTH_CONFIG}" \
     --input image-5.6.gz \
     --image-name image-5.6 \
     --name ubleipzig/vufind-php \
@@ -177,6 +177,7 @@ publish_production_images_56:
     --tag 5
 
     deployer publish \
+    --docker-config "${DOCKER_PRODUCTION_AUTH_CONFIG}" \
     --input image-5.6-debug.gz \
     --image-name image-5.6-debug \
     --name ubleipzig/vufind-php \
@@ -201,6 +202,7 @@ publish_production_images_71:
     declare suffix=`expr ${CI_COMMIT_TAG} ':' '[^-]\+-\(.*\)'`
 
     deployer publish \
+    --docker-config "${DOCKER_PRODUCTION_AUTH_CONFIG}" \
     --input image-7.1.gz \
     --image-name image-7.1 \
     --name ubleipzig/vufind-php \
@@ -208,6 +210,7 @@ publish_production_images_71:
     --tag 7.1 \
 
     deployer publish \
+    --docker-config "${DOCKER_PRODUCTION_AUTH_CONFIG}" \
     --input image-7.1-debug.gz \
     --image-name image-7.1-debug \
     --name ubleipzig/vufind-php \
@@ -232,6 +235,7 @@ publish_production_images_72:
     declare suffix=`expr ${CI_COMMIT_TAG} ':' '[^-]\+-\(.*\)'`
 
     deployer publish \
+    --docker-config "${DOCKER_PRODUCTION_AUTH_CONFIG}" \
     --input image-7.2.gz \
     --image-name image-7.2 \
     --name ubleipzig/vufind-php \
@@ -239,6 +243,7 @@ publish_production_images_72:
     --tag 7.2 \
 
     deployer publish \
+    --docker-config "${DOCKER_PRODUCTION_AUTH_CONFIG}" \
     --input image-7.2-debug.gz \
     --image-name image-7.2-debug \
     --name ubleipzig/vufind-php \
@@ -262,6 +267,7 @@ publish_production_images_73:
     declare suffix=`expr ${CI_COMMIT_TAG} ':' '[^-]\+-\(.*\)'`
 
     deployer publish \
+    --docker-config "${DOCKER_PRODUCTION_AUTH_CONFIG}" \
     --input image-7.3.gz \
     --image-name image-7.3 \
     --name ubleipzig/vufind-php \
@@ -271,6 +277,7 @@ publish_production_images_73:
     --tag latest
 
     deployer publish \
+    --docker-config "${DOCKER_PRODUCTION_AUTH_CONFIG}" \
     --input image-7.3-debug.gz \
     --image-name image-7.3-debug \
     --name ubleipzig/vufind-php \
@@ -293,12 +300,14 @@ publish_production_images_73:
 #   - docker:dind
 #   script: |
 #     declare suffix=`expr ${CI_COMMIT_TAG} ':' 'vufind1-[^-]\+-\(.*\)'`
-
+#
 #     deployer publish \
-#     --input image-5.3-vufind1-debug.gz \
-#     --tag ubleipzig/vufind-php:vufind1-5.3-${suffix}-debug \
-#     --tag ubleipzig/vufind-php:vufind1-5.3-debug \
-#     --tag ubleipzig/vufind-php:vufind1-5-debug
+#     --docker-config "${DOCKER_PRODUCTION_AUTH_CONFIG}" \
+#     --image-name image-5.3-vufind1 \
+#     --name ubleipzig/vufind-php \
+#     --tag vufind1-5.3-${suffix}-debug \
+#     --tag vufind1-5.3-debug \
+#     --tag vufind1-5-debug
 #   tags:
 #   - docker
 #   only:
