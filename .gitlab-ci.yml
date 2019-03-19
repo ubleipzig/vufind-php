@@ -167,15 +167,19 @@ publish_production_images_56:
 
     deployer publish \
     --input image-5.6.gz \
-    --tag ubleipzig/vufind-php:5.6-${suffix} \
-    --tag ubleipzig/vufind-php:5.6 \
-    --tag ubleipzig/vufind-php:5
+    --image-name image-5.6 \
+    --name ubleipzig/vufind-php \
+    --tag 5.6-${suffix} \
+    --tag 5.6 \
+    --tag 5
 
     deployer publish \
     --input image-5.6-debug.gz \
-    --tag ubleipzig/vufind-php:5.6-${suffix}-debug \
-    --tag ubleipzig/vufind-php:5.6-debug \
-    --tag ubleipzig/vufind-php:5-debug
+    --image-name image-5.6-debug \
+    --name ubleipzig/vufind-php \
+    --tag 5.6-${suffix}-debug \
+    --tag 5.6-debug \
+    --tag 5-debug
   tags:
   - docker
   only:
@@ -195,14 +199,17 @@ publish_production_images_71:
 
     deployer publish \
     --input image-7.1.gz \
-    --tag ubleipzig/vufind-php:7.1-${suffix} \
-    --tag ubleipzig/vufind-php:7.1 \
-    --tag ubleipzig/vufind-php:5
+    --image-name image-7.1 \
+    --name ubleipzig/vufind-php \
+    --tag 7.1-${suffix} \
+    --tag 7.1 \
 
     deployer publish \
     --input image-7.1-debug.gz \
-    --tag ubleipzig/vufind-php:7.1-${suffix}-debug \
-    --tag ubleipzig/vufind-php:7.1-debug
+    --image-name image-7.1-debug \
+    --name ubleipzig/vufind-php \
+    --tag 7.1-${suffix}-debug \
+    --tag 7.1-debug
   tags:
   - docker
   only:
@@ -223,13 +230,17 @@ publish_production_images_72:
 
     deployer publish \
     --input image-7.2.gz \
-    --tag ubleipzig/vufind-php:7.2-${suffix} \
-    --tag ubleipzig/vufind-php:7.2
+    --image-name image-7.2 \
+    --name ubleipzig/vufind-php \
+    --tag 7.2-${suffix} \
+    --tag 7.2 \
 
     deployer publish \
     --input image-7.2-debug.gz \
-    --tag ubleipzig/vufind-php:7.2-${suffix}-debug \
-    --tag ubleipzig/vufind-php:7.2-debug
+    --image-name image-7.2-debug \
+    --name ubleipzig/vufind-php \
+    --tag 7.2-${suffix}-debug \
+    --tag 7.2-debug
   tags:
   - docker
   only:
@@ -249,15 +260,20 @@ publish_production_images_73:
 
     deployer publish \
     --input image-7.3.gz \
-    --tag ubleipzig/vufind-php:7.3-${suffix} \
-    --tag ubleipzig/vufind-php:7.3 \
-    --tag ubleipzig/vufind-php:7
+    --image-name image-7.3 \
+    --name ubleipzig/vufind-php \
+    --tag 7.3-${suffix} \
+    --tag 7.3 \
+    --tag 7 \
+    --tag latest
 
     deployer publish \
     --input image-7.3-debug.gz \
-    --tag ubleipzig/vufind-php:7.3-${suffix}-debug \
-    --tag ubleipzig/vufind-php:7.3-debug \
-    --tag ubleipzig/vufind-php:7
+    --image-name image-7.3-debug \
+    --name ubleipzig/vufind-php \
+    --tag 7.3-${suffix}-debug \
+    --tag 7-debug \
+    --tag latest-debug
   tags:
   - docker
   only:
