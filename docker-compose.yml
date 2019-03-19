@@ -1,0 +1,21 @@
+version: '2'
+
+services:
+  docker:
+    image: docker:dind
+    privileged: true
+
+  deployer:
+    image: ubleipzig/deployer:1.4.4
+    depends_on:
+    - docker
+    user: root
+    working_dir: /app
+    environment:
+      DOCKER_HOST: docker
+      HTTP_PROXY: http://proxy.uni-leipzig.de:3128
+      HTTPS_PROXY: http://proxy.uni-leipzig.de:3128
+      FTP_PROXY: http://proxy.uni-leipzig.de:3128
+      NO_PROXY: 127.0.0.1,localhost,.uni-leipzig.de,docker
+    volumes:
+    - ./:/app

@@ -17,5 +17,6 @@ RUN apk add --no-cache --update autoconf \
   && sed -i '1 a xdebug.remote_connect_back=1 ' /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
   && sed -i '1 a xdebug.remote_port=9000' /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
   && sed -i '1 a xdebug.remote_enable=1' /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+  && echo 'error_reporting=E_ALL' >/usr/local/etc/php/conf.d/development.ini \
   && sed -e "s!^#\s*StrictHostKeyChecking ask!StrictHostKeyChecking no!" -i /etc/ssh/ssh_config \
   && chmod a+x /docker-entrypoint
